@@ -4,17 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Döviz Çevirici</title>
-  
-  <!-- Bootstrap 5 CSS CDN -->
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
   <div class="container my-5">
-    <h2 class="mb-4 text-center">Döviz Çevirici</h2>
+    <div class="d-flex justify-content-end mb-3">
+      <select id="language-selector" class="form-select w-auto">
+        <option value="tr">Türkçe</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+
+    <h2 class="mb-4 text-center" data-i18n="title">Döviz Çevirici</h2>
 
     <form method="POST" class="mx-auto" style="max-width: 400px;">
       <div class="mb-3">
-        <label for="amount" class="form-label">Miktar</label>
+        <label for="amount" class="form-label" data-i18n="label_amount">Miktar</label>
         <input
           type="number"
           class="form-control"
@@ -28,7 +34,7 @@
       </div>
 
       <div class="mb-3">
-        <label for="to_currency" class="form-label">Çevirilecek Döviz</label>
+        <label for="to_currency" class="form-label" data-i18n="label_to">Çevirilecek Döviz</label>
         <select class="form-select" id="to_currency" name="to_currency" required>
           {% for currency in currencies %}
             <option value="{{ currency }}" {% if currency == to_curr %}selected{% endif %}>{{ currency }}</option>
@@ -37,7 +43,7 @@
       </div>
 
       <div class="mb-3">
-        <label for="from_currency" class="form-label">Elde Edilecek Döviz</label>
+        <label for="from_currency" class="form-label" data-i18n="label_from">Elde Edilecek Döviz</label>
         <select class="form-select" id="from_currency" name="from_currency" required>
           {% for currency in currencies %}
             <option value="{{ currency }}" {% if currency == from_curr %}selected{% endif %}>{{ currency }}</option>
@@ -45,17 +51,56 @@
         </select>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100">Çevir</button>
+      <button type="submit" class="btn btn-primary w-100" data-i18n="btn_convert">Çevir</button>
     </form>
 
     {% if result is not none %}
     <div class="alert alert-success text-center mt-4" role="alert">
-      <strong>Sonuç:</strong> {{ amount }} {{ to_curr }} = {{ result | round(2) }} {{ from_curr }}
+      <strong data-i18n="label_result">Sonuç:</strong> {{ amount }} {{ to_curr }} = {{ result | round(2) }} {{ from_curr }}
     </div>
     {% endif %}
   </div>
 
-  <!-- Bootstrap 5 JS Bundle with Popper -->
+  <script>
+    const translations = {
+      tr: {
+        title: "Döviz Çevirici",
+        label_amount: "Miktar",
+        label_to: "Çevirilecek Döviz",
+        label_from: "Elde Edilecek Döviz",
+        btn_convert: "Çevir",
+        label_result: "Sonuç:"
+      },
+      en: {
+        title: "Currency Converter",
+        label_amount: "Amount",
+        label_to: "From Currency",
+        label_from: "To Currency",
+        btn_convert: "Convert",
+        label_result: "Result:"
+      }
+    };
+
+    const langSelector = document.getElementById("language-selector");
+
+    function setLanguage(lang) {
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+    }
+
+    langSelector.addEventListener("change", () => {
+      const selectedLang = langSelector.value;
+      setLanguage(selectedLang);
+    });
+
+    // Sayfa ilk açıldığında varsayılan dili ayarla
+    setLanguage("tr");
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
